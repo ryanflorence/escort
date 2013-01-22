@@ -1,2 +1,2 @@
-var tour = new Escort('#tour');
-tour.start();
+var escort = new Escort('#tour');
+escort.start();

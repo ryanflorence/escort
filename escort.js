@@ -64,8 +64,9 @@ Escort.prototype.start = function() {
 Escort.prototype.show = function(index) {
   this.hideCurrent();
   this.$popup = this.popups[index];
-  this.position();
   this.$popup.show();
+  this.position();
+  setTimeout($.proxy(this, 'scroll'), 100);
 };
 
 Escort.prototype.hideCurrent = function() {
@@ -73,12 +74,20 @@ Escort.prototype.hideCurrent = function() {
 };
 
 Escort.prototype.position = function() {
-  var pointsAt = this.$popup.attr('points-at');
-  if (pointsAt) {
-    this.positionAt(pointsAt);
+  var pointsTo = this.$popup.attr('points-to');
+  if (pointsTo) {
+    this.pointTo(pointsTo);
   } else {
     this.positionDefault();
   }
+};
+
+Escort.prototype.scroll = function() {
+  // TODO: make this work no matter where it is on the page
+  var top = this.$popup.offset().top;
+  $('html,body').animate({
+    scrollTop: top - 100
+  }, 200);
 };
 
 Escort.prototype.positionDefault = function() {
@@ -87,5 +96,26 @@ Escort.prototype.positionDefault = function() {
     at: 'center',
     of: window
   });
+};
+
+Escort.positions = {
+  left: {
+    my: 'right',
+    at: 'left center'
+  },
+  right: {
+    my: 'left',
+    at: 'right'
+  },
+  top: {},
+  bottom: {}
+};
+
+Escort.prototype.pointTo = function(pointTo) {
+  var position = this.$popup.attr('position') || 'bottom';
+  var options = Escort.positions[position];
+  options.of = $(pointTo);
+  console.log(options);
+  this.$popup.position(options);
 };
 
