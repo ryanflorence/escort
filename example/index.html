@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>jQuery Escort Example</title>
+  <style>
+  body {
+    font-family: "comic sans ms";
+    padding: 40px;
+    color: #444;
+    background: #f4f5f7;
+  }
+  img {
+    background: #fff;
+    padding: 2px;
+    border: solid 1px #ccc;
+  }
+  </style>
+  <link rel="stylesheet" href="tour.css" type="text/css" charset="utf-8">
+</head>
+<body>
+
+  <!-- page content -->
+  <div>
+    <img id="cage" src="http://placecage.com/300/250">
+  </div>
+
+  <div>
+    <img id="kitten" src="http://placekitten.com/300/340">
+  </div>
+
+  <div style="margin-top: 1000px; text-align: right">
+    <img id="nic-kitty" src="http://i.imgur.com/OJ4EqGH.png">
+  </div>
+
+  <!-- the tour: the escort API is pretty much just HTML -->
+  <div id="tour" style="display: none">
+    <div id="tour-welcome">
+      <p>WELCOME TO THE TOUR, I WILL BE YOUR ESCORT.</p>
+      <div class="tour-nav">
+        <a href="#tour-nic">Next</a>
+      </div>
+    </div>
+
+    <div id="tour-nic" points-to="#cage">
+      <h3>This is Nicolas Cage.</h3>
+    </div>
+
+    <div id="tour-kitty" points-to="#kitty">
+      <h3>This is a kitty.</h3>
+    </div>
+    
+    <div id="tour-nic-kitty" points-to="nic-kitty">
+      <h3>This is a Nic Cage Kitty</h3>
+    </div>
+  </div>
+
+  <script src="../vendor/jquery.js"></script>
+  <script src="../vendor/position.js"></script>
+  <script src="../escort.js"></script>
+  <script src="demo.js"></script>
