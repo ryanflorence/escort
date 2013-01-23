@@ -83,11 +83,7 @@ Escort.prototype.position = function() {
 };
 
 Escort.prototype.scroll = function() {
-  // TODO: make this work no matter where it is on the page
-  var top = this.$popup.offset().top;
-  $('html,body').animate({
-    scrollTop: top - 100
-  }, 200);
+  this.$popup.scrollIntoView({offset: {x: 0, y: 100}});
 };
 
 Escort.prototype.positionDefault = function() {
