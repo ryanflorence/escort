@@ -19,32 +19,19 @@
 </head>
 <body>
 
-  <!-- page content -->
-  <div>
-    <img id="cage" src="http://placecage.com/300/250" width="300" height="250">
-  </div>
-
-  <div>
-    <img id="kitty" src="http://placekitten.com/300/340" width="300" height="340">
-  </div>
-
-  <div style="margin-top: 1000px; text-align: right">
-    <img id="nic-kitty" src="http://i.imgur.com/OJ4EqGH.png" width="356" height"269">
-  </div>
-
   <!-- the tour: the escort API is pretty much just HTML -->
   <div id="tour" style="display: none">
     <div id="tour-welcome">
       <p>WELCOME TO THE TOUR, I WILL BE YOUR ESCORT.</p>
       <div class="tour-nav">
-        <a href="#tour-nic">Next</a>
+        <a href="#tour-nic">Start</a>
       </div>
     </div>
 
     <div id="tour-nic" points-to="#cage" position="right">
       <h3>This is Nicolas Cage.</h3>
       <div class="tour-nav">
-        <a href="#tour-kitty">Next</a>
+        <a href="#" class="escort-close">close</a> <a href="#tour-kitty">Next</a>
       </div>
     </div>
 
@@ -57,7 +44,25 @@
     
     <div id="tour-nic-kitty" points-to="#nic-kitty" position="left">
       <h3>This is a Nic Cage Kitty</h3>
+      <div class="tour-nav">
+        <a href="#tour-welcome">Start over</a>
+      </div>
+
     </div>
+  </div>
+
+
+  <!-- page content -->
+  <div>
+    <img id="cage" src="http://placecage.com/300/250" width="300" height="250">
+  </div>
+
+  <div>
+    <img id="kitty" src="http://placekitten.com/300/340" width="300" height="340">
+  </div>
+
+  <div style="margin-top: 1000px; text-align: right">
+    <img id="nic-kitty" src="http://i.imgur.com/OJ4EqGH.png" width="356" height"269">
   </div>
 
   <script src="../vendor/jquery.js"></script>

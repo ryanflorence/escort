@@ -118,13 +118,12 @@
 				{
 					if (rel.top < 0)
 					{
-						animOptions.scrollTop = dim.s.scroll.top + rel.top;
+						animOptions.scrollTop = dim.s.scroll.top + rel.top - options.offset.y;
 					}
 					else if (rel.top > 0 && rel.bottom < 0)
 					{
-						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom);
+						animOptions.scrollTop = dim.s.scroll.top + Math.min(rel.top, -rel.bottom) + options.offset.y;
 					}
-          animOptions.scrollTop = animOptions.scrollTop + options.offset.y;
 				}
 
 				// horizontal scroll
