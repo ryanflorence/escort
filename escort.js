@@ -21,11 +21,11 @@ function Escort(selector) {
 /**
  * Start a tour.
  *
- * The first popup to display will be the first popup unless one is found in
- * the hash.
+ * The initial popup to display will be the first unless one is found in the
+ * hash.
  *
- * @api public
  * @return {Escort}
+ * @api public
  */
 
 Escort.prototype.start = function() {
@@ -47,6 +47,7 @@ Escort.prototype.start = function() {
 Escort.prototype.show = function(index) {
   this.hideCurrent();
   this.$popup = this.popups[index];
+  this.beforeShow();
   this.$popup.show().css(this.constructor.resetStyles);
   this.position();
   this.scroll(this.animate);
@@ -100,6 +101,46 @@ Escort.prototype.close = function(event) {
 };
 
 /**
+ * Called before a popup is shown.
+ *
+ * @api private
+ */
+
+Escort.prototype.beforeShow = function() {
+  this.trigger(this.$popup.attr('id') + ':before');
+  this.appendHash();
+};
+
+/**
+ * Appends a hash to a popup's `points-to` href to persist a tour across page
+ * loads.
+ *
+ * @api private
+ */
+
+Escort.prototype.appendHash = function() {
+  var data = this.$popup.data();
+  if (!data.appendHash || !data.pointsTo) return;
+  var target = $(data.pointsTo);
+  var hash = data.appendHash.replace(/^#/, '');
+  target.attr('href', target.attr('href') + '#' + hash);
+};
+
+/**
+ * Removes hash from popup's `points-to` href.
+ *
+ * @api private
+ */
+
+Escort.prototype.removeHash = function() {
+  var data = this.$popup.data();
+  if (!data.appendHash || !data.pointsTo) return;
+  var target = $(data.pointsTo);
+  var href = target.attr('href').replace(/#.+$/, '');
+  target.attr('href', href);
+};
+
+/**
  * Animates the popup.
  *
  * @api private
@@ -116,7 +157,7 @@ Escort.prototype.animate = function() {
  */
 
 Escort.prototype.getPopupAnimation = function() {
-  var direction = this.$popup.attr('position') || 'bottom';
+  var direction = this.$popup.data('position') || 'bottom';
   return this.constructor.animations[direction];
 };
 
@@ -210,10 +251,10 @@ Escort.prototype.initPopup = function(index, el) {
  */
 
 Escort.prototype.hideCurrent = function() {
-  if (this.$popup) {
-    this.$popup.hide();
-    this.trigger(this.$popup.attr('id') + ':hide');
-  }
+  if (!this.$popup) return;
+  this.$popup.hide();
+  this.removeHash();
+  this.trigger(this.$popup.attr('id') + ':hide');
 };
 
 /**
@@ -223,7 +264,7 @@ Escort.prototype.hideCurrent = function() {
  */
 
 Escort.prototype.position = function() {
-  var pointsTo = this.$popup.attr('points-to');
+  var pointsTo = this.$popup.data('points-to');
   if (pointsTo) {
     this.pointTo(pointsTo);
   } else {
@@ -248,7 +289,7 @@ Escort.prototype.positionDefault = function() {
  */
 
 Escort.prototype.pointTo = function(pointTo) {
-  var position = this.$popup.attr('position') || 'bottom';
+  var position = this.$popup.data('position') || 'bottom';
   var options = this.constructor.positions[position];
   options.of = $(pointTo);
   this.$popup.position(options);
@@ -266,7 +307,6 @@ Escort.prototype.scroll = function(callback) {
     complete: callback
   });
 };
-
 
 /**
  * Stores all instances
@@ -313,8 +353,11 @@ Escort.resetStyles = {
  */
 
 Escort.addInstance = function(instance) {
-  if (this.instances.length === 0) this.attachEvents();
   this.instances.push(instance);
+  if (this.instances.length == 1) {
+    this.attachEvents();
+    this.checkHash();
+  }
 };
 
 /**
@@ -327,10 +370,6 @@ Escort.attachEvents = function() {
   $(window).on('hashchange', $.proxy(this, 'checkHash'));
 };
 
-Escort.prototype.hijackClick = function(event) {
-  window.location = this.$popup.attr('hijack');
-};
-
 /**
  * Checks `location.hash` for popups in all instances and shows one if found.
  *
@@ -340,11 +379,9 @@ Escort.prototype.hijackClick = function(event) {
 
 Escort.checkHash = function(event) {
   for (var i = 0; i < this.instances.length; i++) {
-    var popupIndex = this.instances[i].getIndexFromHash();
-    if (popupIndex > -1) {
-      this.instances[i].show(popupIndex);
-      break;
-    }
+    if (this.instances[i].getIndexFromHash() == -1) continue;
+    this.instances[i].start();
+    break;
   }
 };
 

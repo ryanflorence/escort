@@ -15,14 +15,23 @@
       </div>
     </div>
 
-    <div id="tour-nic" points-to="#cage" position="right">
+    <div
+      id="tour-nic"
+      data-points-to="#cage"
+      data-position="right"
+    >
       <h3>This is Nicolas Cage.</h3>
       <div class="tour-nav">
-        <a href="#" class="escort-close">close</a> <a href="#tour-kitty" tab-index="-1">Next</a>
+        <a href="#" class="escort-close">Close</a>
+        <a href="#tour-kitty" tab-index="-1">Next</a>
       </div>
     </div>
 
-    <div id="tour-kitty" points-to="#kitty" position="right">
+    <div
+      id="tour-kitty"
+      data-points-to="#kitty"
+      data-position="right"
+    >
       <h3>This is a kitty.</h3>
       <div class="tour-nav">
         <a href="#tour-nic-kitty" tab-index="-1">OMGOSH NEXT!</a>
@@ -31,9 +40,9 @@
     
     <div
       id="tour-nic-kitty"
-      points-to="#nic-kitty"
-      position="left"
-      hijack="page.html#tour-finish"
+      data-points-to="#nic-kitty"
+      data-position="left"
+      data-append-hash="#tour-finish"
     >
       <h3>This is a Nic Cage Kitty</h3>
       <p>Click it to continue the tour, persisting over page loads.</p>
@@ -61,4 +70,7 @@
   <script src="../vendor/position.js"></script>
   <script src="../vendor/scrollIntoView.js"></script>
   <script src="../escort.js"></script>
-  <script src="demo.js"></script>
+  <script>
+    tour = new Escort('#tour');
+    $(window).on('load', $.proxy(tour, 'start'));
+  </script>
