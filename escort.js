@@ -10,10 +10,11 @@ function Escort(selector) {
   if (!(this instanceof Escort)) return new Escort(selector);
   this.bindMethods();
   this.$el = jQuery(selector);
+  this.eventProxy = $({});
   this.initPopups();
   this.attachEvents();
   this.$el.hide();
-  Escort.addInstance(this);
+  this.constructor.addInstance(this);
   return this;
 }
 
@@ -39,31 +40,95 @@ Escort.prototype.start = function() {
  * Show the popup at `index`.
  *
  * @param {Number} index
- * @api public
  * @return {Escort}
+ * @api public
  */
 
 Escort.prototype.show = function(index) {
   this.hideCurrent();
   this.$popup = this.popups[index];
-  this.$popup.show();
+  this.$popup.show().css(this.constructor.resetStyles);
   this.position();
-  setTimeout($.proxy(this, 'scroll'), 100);
+  this.scroll(this.animate);
+  this.trigger(this.$popup.attr('id'));
   return this;
+};
+
+/**
+ * Adds event listener to the instance.
+ *
+ * Events:
+ *
+ * - when a popup is shown, triggers its id
+ * - when a popup is hidden, triggers {id}:hide
+ * - when the tour is closed
+ *
+ * @param {String} popupId
+ * @param {Function} handler
+ * @api public
+ */
+
+Escort.prototype.on = function(popupId, handler) {
+  this.eventProxy.on(popupId, handler);
+};
+
+/**
+ * Removes an event listener from the instance.
+ *
+ * @param {String} event
+ * @param {Function} handler
+ * @api public
+ */
+
+Escort.prototype.off = function(event, handler) {
+  this.eventProxy.off(event, handler);
 };
 
 /**
  * Closes the tour.
  *
+ * @returns {Escort}
  * @api public
- * @return {Escort}
  */
 
 Escort.prototype.close = function(event) {
   this.$el.hide();
   if (event) event.preventDefault();
-  location.hash = '';
+  window.location.hash = '';
+  this.trigger('hide');
   return this;
+};
+
+/**
+ * Animates the popup.
+ *
+ * @api private
+ */
+
+Escort.prototype.animate = function() {
+  this.$popup.animate(this.getPopupAnimation(), 200);
+};
+
+/**
+ * Gets animation options for the popup animation.
+ *
+ * @api private
+ */
+
+Escort.prototype.getPopupAnimation = function() {
+  var direction = this.$popup.attr('position') || 'bottom';
+  return this.constructor.animations[direction];
+};
+
+/**
+ * Triggers event listeners on `name`
+ *
+ * @param {String} name
+ * @api private
+ */
+
+Escort.prototype.trigger = function(event) {
+  this.eventProxy.trigger.apply(this.eventProxy, arguments);
 };
 
 /**
@@ -75,6 +140,7 @@ Escort.prototype.close = function(event) {
 Escort.prototype.bindMethods = function() {
   this.initPopup = $.proxy(this, 'initPopup');
   this.close = $.proxy(this, 'close');
+  this.animate = $.proxy(this, 'animate');
 };
 
 /**
@@ -85,6 +151,7 @@ Escort.prototype.bindMethods = function() {
 
 Escort.prototype.attachEvents = function() {
   this.$el.on('click.escort', '.escort-close', this.close);
+  //$('body').on('click.escort', '[hijack]', $.proxy(this, 'hijackClick'));
 };
 
 /**
@@ -95,6 +162,7 @@ Escort.prototype.attachEvents = function() {
 
 Escort.prototype.removeEvents = function() {
   this.$el.off('.escort');
+  //$('body').off('.escort');
 };
 
 /**
@@ -106,7 +174,7 @@ Escort.prototype.removeEvents = function() {
  */
 
 Escort.prototype.getIndexFromHash = function() {
-  var id = location.hash.replace(/^#/, '');
+  var id = window.location.hash.replace(/^#/, '');
   if (id === '') return -1;
   for (var i = 0; i < this.popups.length; i++) {
     if (this.popups[i].attr('id') == id) return i;
@@ -142,7 +210,10 @@ Escort.prototype.initPopup = function(index, el) {
  */
 
 Escort.prototype.hideCurrent = function() {
-  if (this.$popup) this.$popup.hide();
+  if (this.$popup) {
+    this.$popup.hide();
+    this.trigger(this.$popup.attr('id') + ':hide');
+  }
 };
 
 /**
@@ -161,27 +232,13 @@ Escort.prototype.position = function() {
 };
 
 /**
- * Scrolls the current popup into view.
- *
- * @api private
- */
-
-Escort.prototype.scroll = function() {
-  this.$popup.scrollIntoView({offset: {x: 0, y: 100}});
-};
-
-/**
  * Positions the current popup in the center of the viewport.
  *
  * @api private
  */
 
 Escort.prototype.positionDefault = function() {
-  this.$popup.position({
-    my: 'center',
-    at: 'center',
-    of: window
-  });
+  this.$popup.position(this.constructor.positions['default']);
 };
 
 /**
@@ -192,10 +249,22 @@ Escort.prototype.positionDefault = function() {
 
 Escort.prototype.pointTo = function(pointTo) {
   var position = this.$popup.attr('position') || 'bottom';
-  var options = Escort.positions[position];
+  var options = this.constructor.positions[position];
   options.of = $(pointTo);
-  console.log(options);
   this.$popup.position(options);
+};
+
+/**
+ * Scrolls the current popup into view.
+ *
+ * @api private
+ */
+
+Escort.prototype.scroll = function(callback) {
+  this.$popup.scrollIntoView({
+    offset: {x: 0, y: 100},
+    complete: callback
+  });
 };
 
 
@@ -210,10 +279,30 @@ Escort.instances = [];
  */
 
 Escort.positions = {
-  left:   { my: 'right',  at: 'left' },
-  right:  { my: 'left',   at: 'right' },
-  top:    { my: 'bottom', at: 'top' },
-  bottom: { my: 'top',    at: 'bottom' }
+  left:      { my: 'right',  at: 'left' },
+  right:     { my: 'left',   at: 'right' },
+  top:       { my: 'bottom', at: 'top' },
+  bottom:    { my: 'top',    at: 'bottom' },
+  'default': { my: 'center', at: 'center', of: window }
+};
+
+/**
+ * Maps animations to positions.
+ */
+
+Escort.animations = {
+  left:   { left: '-=20px', opacity: 1 },
+  right:  { left: '+=20px', opacity: 1 },
+  bottom: { top: '+=20px',  opacity: 1 },
+  top:    { top: '-=20px',  opacity: 1 }
+};
+
+/**
+ * Styles used to reset a popup before showing.
+ */
+
+Escort.resetStyles = {
+  opacity: 0
 };
 
 /**
@@ -224,7 +313,7 @@ Escort.positions = {
  */
 
 Escort.addInstance = function(instance) {
-  if (this.instances.length === 0) this.attach();
+  if (this.instances.length === 0) this.attachEvents();
   this.instances.push(instance);
 };
 
@@ -234,8 +323,12 @@ Escort.addInstance = function(instance) {
  * @api private
  */
 
-Escort.attach = function() {
-  $(window).on('hashchange', $.proxy(Escort, 'checkHash'));
+Escort.attachEvents = function() {
+  $(window).on('hashchange', $.proxy(this, 'checkHash'));
+};
+
+Escort.prototype.hijackClick = function(event) {
+  window.location = this.$popup.attr('hijack');
 };
 
 /**

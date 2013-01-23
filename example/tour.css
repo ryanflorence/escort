@@ -1,3 +1,4 @@
+/* STYLE HOWEVER YOU WANT! I don't own you. */
 #tour > * {
   background: #fff;
   position: absolute;
@@ -21,3 +22,21 @@
   border-radius: 3px;
 }
 
+
+/* whatever */
+body {
+  font-family: "comic sans ms";
+  padding: 40px;
+  color: #444;
+  background: #f4f5f7;
+}
+
+img {
+  background: #fff;
+  padding: 2px;
+  border: solid 1px #ccc;
+}
+
+#nic-kitty {
+  display: inline-block;
+}

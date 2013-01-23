@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>jQuery Escort Example</title>
+  <link rel="stylesheet" href="tour.css" type="text/css" charset="utf-8">
+</head>
+<body>
+
+  <!-- the tour: the escort API is pretty much just HTML -->
+  <div id="tour" style="display: none">
+    <div id="tour-finish" points-to="#cage" position="bottom">
+      <h3>UR DONE!</h3>
+      <p>We survived a page reload</p>
+      <div class="tour-nav">
+        <a href="./#tour-welcome">Start Over</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- page content -->
+  <div style="text-align: center;">
+    <img id="cage" src="http://placecage.com/900/450" width="900" height="500">
+  </div>
+
+  <script src="../vendor/jquery.js"></script>
+  <script src="../vendor/position.js"></script>
+  <script src="../vendor/scrollIntoView.js"></script>
+  <script src="../escort.js"></script>
+  <script src="demo.js"></script>

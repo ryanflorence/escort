@@ -2,19 +2,6 @@
 <html lang="en">
 <head>
   <title>jQuery Escort Example</title>
-  <style>
-  body {
-    font-family: "comic sans ms";
-    padding: 40px;
-    color: #444;
-    background: #f4f5f7;
-  }
-  img {
-    background: #fff;
-    padding: 2px;
-    border: solid 1px #ccc;
-  }
-  </style>
   <link rel="stylesheet" href="tour.css" type="text/css" charset="utf-8">
 </head>
 <body>
@@ -24,45 +11,50 @@
     <div id="tour-welcome">
       <p>WELCOME TO THE TOUR, I WILL BE YOUR ESCORT.</p>
       <div class="tour-nav">
-        <a href="#tour-nic">Start</a>
+        <a href="#tour-nic" tab-index="-1">Start</a>
       </div>
     </div>
 
     <div id="tour-nic" points-to="#cage" position="right">
       <h3>This is Nicolas Cage.</h3>
       <div class="tour-nav">
-        <a href="#" class="escort-close">close</a> <a href="#tour-kitty">Next</a>
+        <a href="#" class="escort-close">close</a> <a href="#tour-kitty" tab-index="-1">Next</a>
       </div>
     </div>
 
     <div id="tour-kitty" points-to="#kitty" position="right">
       <h3>This is a kitty.</h3>
       <div class="tour-nav">
-        <a href="#tour-nic-kitty">OMGOSH NEXT!</a>
+        <a href="#tour-nic-kitty" tab-index="-1">OMGOSH NEXT!</a>
       </div>
     </div>
     
-    <div id="tour-nic-kitty" points-to="#nic-kitty" position="left">
+    <div
+      id="tour-nic-kitty"
+      points-to="#nic-kitty"
+      position="left"
+      hijack="page.html#tour-finish"
+    >
       <h3>This is a Nic Cage Kitty</h3>
+      <p>Click it to continue the tour, persisting over page loads.</p>
       <div class="tour-nav">
-        <a href="#tour-welcome">Start over</a>
+        <a href="#tour-welcome" tab-index="-1">Start over</a>
       </div>
-
     </div>
   </div>
 
 
   <!-- page content -->
   <div>
-    <img id="cage" src="http://placecage.com/300/250" width="300" height="250">
+    <img id="cage" src="img/cage.jpg" width="300" height="250">
   </div>
 
   <div>
-    <img id="kitty" src="http://placekitten.com/300/340" width="300" height="340">
+    <img id="kitty" src="img/kitty.jpg" width="300" height="340">
   </div>
 
   <div style="margin-top: 1000px; text-align: right">
-    <img id="nic-kitty" src="http://i.imgur.com/OJ4EqGH.png" width="356" height"269">
+    <a id="nic-kitty" href="page.html"><img src="img/cage-kitty.png" width="356" height"269"></a>
   </div>
 
   <script src="../vendor/jquery.js"></script>
