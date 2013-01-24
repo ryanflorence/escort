@@ -3,9 +3,8 @@
   background: #fff;
   position: absolute;
   padding: 20px;
-  border: 1px solid #444;
+  border: 1px solid #888;
   border-radius: 0 20%;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
 }
 
 .tour-nav {
@@ -15,13 +14,60 @@
 .tour-nav a {
   text-decoration: none;
   display: inline-block;
-  color: blue;
-  background: lightblue;
-  border: 1px solid;
+  color: white;
+  background: #666;
   padding: 4px 8px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
+.tour-nav a:hover {
+  background: #888;
+}
+
+.tour-nav a:active {
+  background: #000;
+}
+
+[data-position]:after,
+[data-position]:before {
+  content: '';
+  display: block;
+  width: 0; 
+  height: 0;
+  position: absolute;
+}
+
+[data-position=right]:before {
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-right: 11px solid #888;
+  top: 20px;
+  left: -11px;
+}
+
+[data-position=right]:after {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid white;
+  top: 21px;
+  left: -10px;
+}
+
+[data-position=left]:before {
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-left: 11px solid #888;
+  top: 44px;
+  right: -11px;
+}
+
+[data-position=left]:after {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid white;
+  top: 45px;
+  right: -10px;
+}
 
 /* whatever */
 body {

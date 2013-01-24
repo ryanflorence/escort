@@ -8,23 +8,24 @@
 
   <!-- the tour: the escort API is pretty much just HTML -->
   <div id="tour" style="display: none">
-    <div id="tour-finish" points-to="#cage" position="bottom">
+    <div id="tour-finish" data-points-to="#cage" data-position="bottom">
       <h3>UR DONE!</h3>
       <p>We survived a page reload</p>
       <div class="tour-nav">
-        <a href="./#tour-welcome">Start Over</a>
+        <a href="index.html">Start Over</a>
       </div>
     </div>
   </div>
 
   <!-- page content -->
   <div style="text-align: center;">
-    <img id="cage" src="http://placecage.com/900/450" width="900" height="500">
+    <img id="cage" src="http://placecage.com/900/450" width="900" height="500" alt="cage">
   </div>
 
   <script src="../vendor/jquery.js"></script>
   <script src="../vendor/position.js"></script>
-  <script src="../vendor/scrollIntoView.js"></script>
+  <script src="../scrollParent.js"></script>
+  <script src="../scrollIntoView.js"></script>
   <script src="../escort.js"></script>
   <script>
     tour = new Escort('#tour');
