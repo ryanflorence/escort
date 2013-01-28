@@ -2,17 +2,29 @@
 <html lang="en">
 <head>
   <title>jQuery Escort Example</title>
-  <link rel="stylesheet" href="tour.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="css/tour.css" type="text/css" charset="utf-8">
 </head>
 <body>
 
-  <!-- the tour: the escort API is pretty much just HTML -->
+  <!-- the escort API is pretty much just HTML -->
   <div id="tour" style="display: none">
-    <div id="tour-welcome">
-      <p>WELCOME TO THE TOUR, I WILL BE YOUR ESCORT.</p>
-      <div class="tour-nav">
-        <a href="#" class="escort-close">No thanks</a>
-        <a href="#tour-nic" tab-index="-1">Start</a>
+    
+    <!-- the direct children of your tour element are the steps -->
+
+    <!-- the only rule is that every step in the tour needs an id, the rest is up to you -->
+    <div id="tour-welcome" class="modal">
+      <div class="modal-body">
+        <h2>WELCOME TO THE TOUR</h2>
+
+        <p>I WILL BE YOUR ESCORT.</p>
+        <div class="popover-actions">
+          <!-- an element with class `escort-close` will close the tour -->
+          <a href="#" class="escort-close btn">No thanks</a>
+          <!-- to link to step in the tour, just link to it like any other element in a web page -->
+          <!-- mind your tab-indicies for accessibility -->
+          <a href="#tour-nic" class="btn btn-primary" tab-index="-1">Start</a>
+        </div>
       </div>
     </div>
 
@@ -20,11 +32,19 @@
       id="tour-nic"
       data-points-to="#cage"
       data-position="right"
+      class="popover right"
     >
-      <h3>This is Nicolas Cage.</h3>
-      <div class="tour-nav">
-        <a href="#" class="escort-close">Leave</a>
-        <a href="#tour-kitty" tab-index="-1">Next</a>
+      <div class="arrow"></div>
+      <h3 class="popover-title">
+        <button type="button" class="close escort-close" data-dismiss="modal" aria-labeledby="close">&times;</button>
+        This is Nicolas Cage
+      </h3>
+      <div class="popover-content">
+        <p>Amazing feature #1, click to make him spin.</p>
+        <div class="popover-actions">
+          <a href="#" class="btn escort-close">Leave</a>
+          <a href="#tour-kitty" class="btn btn-primary" tab-index="-1">Next</a>
+        </div>
       </div>
     </div>
 
@@ -32,33 +52,52 @@
       id="tour-kitty"
       data-points-to="#kitty"
       data-position="right"
+      class="popover right"
     >
-      <h3>This is a kitty.</h3>
-      <div class="tour-nav">
-        <a href="#tour-cant-handle-it">I can't handle it</a>
-        <a href="#tour-nic-kitty" tab-index="-1">OMGOSH NEXT!</a>
+      <div class="arrow"></div>
+      <h3 class="popover-title">
+        <button type="button" class="close escort-close" data-dismiss="modal" aria-labeledby="close">&times;</button>
+        This is a kitty
+      </h3>
+      <div class="popover-content">
+        <p>Style the tour however you like, this site uses Twitter Bootstrap, but its all just HTML, do whatever you want.</p>
+        <div class="popover-actions">
+          <a class="btn" href="#tour-cant-handle-it">I can't handle it</a>
+          <a class="btn btn-primary" href="#tour-nic-kitty" tab-index="-1">OMGOSH NEXT!</a>
+        </div>
       </div>
     </div>
 
-    <div id="tour-cant-handle-it">
-      <h3>You won't be disappointed...</h3>
-      <div class="tour-nav">
-        <a href="#" class="escort-close">Really, leave the tour</a>
-        <a href="#tour-nic-kitty" tab-index="-1">Okay, I can handle it</a>
+    <div id="tour-cant-handle-it" class="popover">
+      <h3 class="popover-title">You won't be disappointed...</h3>
+      <div class="popover-content">
+        <div class="popover-actions">
+          <a class="btn escort-close" href="#">Really, leave the tour</a>
+          <a class="btn btn-primary" href="#tour-nic-kitty" tab-index="-1">Okay, I can handle it</a>
+        </div>
       </div>
     </div>
-    
+
     <div
       id="tour-nic-kitty"
       data-points-to="#nic-kitty"
       data-position="left"
       data-append-hash="#tour-finish"
+      data-offset-x="356"
+      class="popover left"
     >
-      <h3>This is a Nic Cage Kitty</h3>
-      <p>Click it to continue the tour, persisting over page loads.</p>
-      <div class="tour-nav">
-        <a href="#" class="escort-close">Close</a>
-        <a href="#tour-welcome" tab-index="-1">Start over</a>
+      <div class="arrow"></div>
+      <h3 class="popover-title">
+        <button type="button" class="close escort-close" data-dismiss="modal" aria-labeledby="close">&times;</button>
+        This is a Nic Cage Kitty
+      </h3>
+      <div class="popover-content">
+        <p>Click the Kitty Cage to continue the tour, persisting over page loads</p>
+        <p>However, click while not on this step and the tour won't open over there</p>
+        <div class="popover-actions">
+          <a href="#" class="btn escort-close">Close</a>
+          <a href="#tour-welcome" tab-index="-1" class="btn btn-primary">Start over</a>
+        </div>        
       </div>
     </div>
   </div>
@@ -73,8 +112,8 @@
     <img id="kitty" src="img/kitty.jpg" width="300" height="340">
   </div>
 
-  <div style="margin-top: 1000px; text-align: right;">
-    <a id="nic-kitty" href="page.html" style="position: relative: left: 500px;"><img src="img/cage-kitty.png" width="356" height"269"></a>
+  <div>
+    <a style="position:absolute; top: 1000px; left: 2000px;" id="nic-kitty" href="page.html"><img src="img/cage-kitty.png" width="356" height"269"></a>
   </div>
 
   <script src="../vendor/jquery.js"></script>
@@ -83,6 +122,16 @@
   <script src="../scrollIntoView.js"></script>
   <script src="../escort.js"></script>
   <script>
-    tour = new Escort('#tour');
+  $(function() {
+    tour = new Escort('#tour', {offset: {x:300, y:100}});
     tour.start();
+
+    // irrelevant page behavior
+    cage = $('#cage').click(function() {
+      cage.addClass('spin');
+      setTimeout(function() {
+        cage.removeClass('spin');
+      }, 1000);
+    });    
+  })
   </script>

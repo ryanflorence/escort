@@ -3,6 +3,7 @@ function ScrollIntoView(el, options) {
   this.$el = $(el);
   this.options = $.extend({}, this.defaults, options);
   this.findScrollParent();
+  console.log(this.options.offset.x);
   this.scroll();
 }
 
@@ -126,7 +127,8 @@ ScrollIntoView.prototype.calculateScrollOptions = function() {
   if (relative.left < 0) { // left of viewport
     options.scrollLeft = p.scroll.left + relative.left - offset.x;
   } else if (relative.left > 0 && relative.right < 0) { // right of viewport
-    options.scrollLeft = p.scroll.left + relative.right + offset.x;
+    options.scrollLeft = p.scroll.left + offset.x +
+                         Math.min(relative.left, -relative.right);
   }
   this.scrollOptions = options;
 };

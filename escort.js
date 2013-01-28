@@ -6,8 +6,9 @@
  * @return {Escort}
  */
 
-function Escort(selector) {
+function Escort(selector, options) {
   if (!(this instanceof Escort)) return new Escort(selector);
+  this.options = $.extend({}, this.defaults, options);
   this.bindMethods();
   this.$el = jQuery(selector);
   this.eventProxy = $({});
@@ -15,8 +16,21 @@ function Escort(selector) {
   this.attachEvents();
   this.$el.hide();
   this.constructor.addInstance(this);
+  console.log(this.options.offset.x);
   return this;
 }
+
+Escort.prototype.defaults = {
+  position: true,
+  resetStyles: { opacity: 0 },
+  offset: {x: 20, y: 20},
+  animations: {
+    left:   { left: '-=20px', opacity: 1 },
+    right:  { left: '+=20px', opacity: 1 },
+    bottom: { top: '+=20px',  opacity: 1 },
+    top:    { top: '-=20px',  opacity: 1 }
+  }
+};
 
 /**
  * Start a tour.
@@ -29,11 +43,11 @@ function Escort(selector) {
  */
 
 Escort.prototype.start = function() {
+  if (this.$popup) return; // started from constructor
   var indexFromHash = this.getIndexFromHash();
   var index = indexFromHash > -1 ? indexFromHash : 0;
   this.$el.show();
   this.show(index);
-  return this;
 };
 
 /**
@@ -45,11 +59,15 @@ Escort.prototype.start = function() {
  */
 
 Escort.prototype.show = function(index) {
+  this.$el.show();
   this.hideCurrent();
   this.$popup = this.popups[index];
   this.beforeShow();
-  this.$popup.show().css(this.constructor.resetStyles);
-  this.position();
+  this.$popup.show();
+  this.$popup.css(this.options.resetStyles);
+  if (this.options.position) {
+    this.position();
+  }
   this.scroll(this.animate);
   this.trigger(this.$popup.attr('id'));
   return this;
@@ -158,7 +176,7 @@ Escort.prototype.animate = function() {
 
 Escort.prototype.getPopupAnimation = function() {
   var direction = this.$popup.data('position') || 'bottom';
-  return this.constructor.animations[direction];
+  return this.options.animations[direction];
 };
 
 /**
@@ -303,9 +321,22 @@ Escort.prototype.pointTo = function(pointTo) {
 
 Escort.prototype.scroll = function(callback) {
   this.$popup.scrollIntoView({
-    offset: {x: 0, y: 100},
+    offset: this.getScrollOffset(),
     complete: callback
   });
+};
+
+/**
+ * Determines the offset in `scroll`
+ *
+ * @api private
+ */
+
+Escort.prototype.getScrollOffset = function() {
+  return {
+    x: parseInt(this.$popup.data('offset-x') || this.options.offset.x, 10),
+    y: parseInt(this.$popup.data('offset-y') || this.options.offset.y, 10)
+  }
 };
 
 /**
@@ -318,31 +349,14 @@ Escort.instances = [];
  * Map `points-to` values to `$.fn.position` options.
  */
 
+// collision: 'none' because $.fn.position mistakenly flips the element if
+// the `of` element has a negative scrollX :\
 Escort.positions = {
-  left:      { my: 'right',  at: 'left' },
-  right:     { my: 'left',   at: 'right' },
-  top:       { my: 'bottom', at: 'top' },
-  bottom:    { my: 'top',    at: 'bottom' },
-  'default': { my: 'center', at: 'center', of: window }
-};
-
-/**
- * Maps animations to positions.
- */
-
-Escort.animations = {
-  left:   { left: '-=20px', opacity: 1 },
-  right:  { left: '+=20px', opacity: 1 },
-  bottom: { top: '+=20px',  opacity: 1 },
-  top:    { top: '-=20px',  opacity: 1 }
-};
-
-/**
- * Styles used to reset a popup before showing.
- */
-
-Escort.resetStyles = {
-  opacity: 0
+  left:      { my: 'right',  at: 'left',   collision: 'none' },
+  right:     { my: 'left',   at: 'right',  collision: 'none' },
+  top:       { my: 'bottom', at: 'top',    collision: 'none' },
+  bottom:    { my: 'top',    at: 'bottom', collision: 'none' },
+  'default': { my: 'center', at: 'center', of: window, collision: 'none' }
 };
 
 /**
@@ -379,8 +393,9 @@ Escort.attachEvents = function() {
 
 Escort.checkHash = function(event) {
   for (var i = 0; i < this.instances.length; i++) {
-    if (this.instances[i].getIndexFromHash() == -1) continue;
-    this.instances[i].start();
+    var index = this.instances[i].getIndexFromHash();
+    if (index == -1) continue;
+    this.instances[i].show(index);
     break;
   }
 };
